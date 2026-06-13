@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_sizes.dart';
+import '../../core/constants/app_assets.dart';
 
 /// Service card widget matching the Figma service listing design.
 class ServiceCard extends StatelessWidget {
@@ -88,15 +89,13 @@ class ServiceCard extends StatelessWidget {
                     child: Row(
                       children: [
                         _ActionIconButton(
-                          icon: Icons.edit_outlined,
-                          color: AppColors.primary,
+                          iconPath: AppAssets.edit,
                           bgColor: AppColors.chipBg,
                           onTap: onEdit,
                         ),
                         const SizedBox(width: AppSizes.paddingXS),
                         _ActionIconButton(
-                          icon: Icons.delete_outline_rounded,
-                          color: AppColors.danger,
+                          iconPath: AppAssets.deleted,
                           bgColor: const Color(0xFFFFEEEE),
                           onTap: onDelete,
                         ),
@@ -215,14 +214,12 @@ class _ActiveBadge extends StatelessWidget {
 
 class _ActionIconButton extends StatelessWidget {
   const _ActionIconButton({
-    required this.icon,
-    required this.color,
+    required this.iconPath,
     required this.bgColor,
     this.onTap,
   });
 
-  final IconData icon;
-  final Color color;
+  final String iconPath;
   final Color bgColor;
   final VoidCallback? onTap;
 
@@ -237,7 +234,8 @@ class _ActionIconButton extends StatelessWidget {
           color: bgColor,
           borderRadius: BorderRadius.circular(AppSizes.radiusS),
         ),
-        child: Icon(icon, color: color, size: AppSizes.iconS),
+        alignment: Alignment.center,
+        child: Image.asset(iconPath, width: AppSizes.iconS, height: AppSizes.iconS),
       ),
     );
   }

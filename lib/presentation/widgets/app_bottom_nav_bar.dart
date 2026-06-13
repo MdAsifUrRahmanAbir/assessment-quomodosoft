@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_sizes.dart';
+import '../../core/constants/app_assets.dart';
 
 /// Floating pill-shaped bottom navigation bar matching the Figma design.
 class AppBottomNavBar extends StatelessWidget {
@@ -33,13 +35,13 @@ class AppBottomNavBar extends StatelessWidget {
       child: Row(
         children: [
           _NavItem(
-            icon: Icons.home_rounded,
+            iconPath: currentIndex == 0 ? AppAssets.homeActive : AppAssets.home,
             label: 'Home',
             isSelected: currentIndex == 0,
             onTap: () => onTap(0),
           ),
           _NavItem(
-            icon: Icons.grid_view_rounded,
+            iconPath: currentIndex == 1 ? AppAssets.serviceActive : AppAssets.service,
             label: 'Service',
             isSelected: currentIndex == 1,
             onTap: () => onTap(1),
@@ -52,13 +54,13 @@ class AppBottomNavBar extends StatelessWidget {
 
 class _NavItem extends StatelessWidget {
   const _NavItem({
-    required this.icon,
+    required this.iconPath,
     required this.label,
     required this.isSelected,
     required this.onTap,
   });
 
-  final IconData icon;
+  final String iconPath;
   final String label;
   final bool isSelected;
   final VoidCallback onTap;
@@ -72,10 +74,14 @@ class _NavItem extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              icon,
-              size: AppSizes.iconL,
-              color: isSelected ? AppColors.primary : AppColors.textLight,
+            SvgPicture.asset(
+              iconPath,
+              width: AppSizes.iconL,
+              height: AppSizes.iconL,
+              colorFilter: ColorFilter.mode(
+                isSelected ? AppColors.primary : AppColors.textLight,
+                BlendMode.srcIn,
+              ),
             ),
             const SizedBox(height: 4),
             Text(
@@ -92,3 +98,4 @@ class _NavItem extends StatelessWidget {
     );
   }
 }
+

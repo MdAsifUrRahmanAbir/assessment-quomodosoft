@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_sizes.dart';
+import '../../../core/constants/app_assets.dart';
 import '../../../core/routes/app_routes.dart';
 import '../../widgets/app_bottom_nav_bar.dart';
 
@@ -206,12 +208,12 @@ class _HeaderPill extends StatelessWidget {
 // ─────────────────────────────────────────────────────────────
 class _StatsSection extends StatelessWidget {
   final List<_StatItem> _stats = const [
-    _StatItem(icon: Icons.shopping_bag_outlined, value: '12', label: 'Active Order', color: Color(0xFF7B3FFF)),
-    _StatItem(icon: Icons.access_time_rounded, value: '04', label: 'Pending Order', color: Color(0xFFFF6B35)),
-    _StatItem(icon: Icons.check_circle_outline_rounded, value: '450', label: 'Complete Order', color: Color(0xFF22C55E)),
-    _StatItem(icon: Icons.list_alt_rounded, value: '14', label: 'Total Services', color: Color(0xFF3B82F6)),
-    _StatItem(icon: Icons.account_balance_wallet_outlined, value: '\$320', label: 'Today Earning', color: Color(0xFFF59E0B)),
-    _StatItem(icon: Icons.trending_up_rounded, value: '\$50K', label: 'Total Earning', color: Color(0xFF8B5CF6)),
+    _StatItem(icon: AppAssets.activeOrder, value: '12', label: 'Active Order', color: Color(0xFF7B3FFF)),
+    _StatItem(icon: AppAssets.pendingOrder, value: '04', label: 'Pending Order', color: Color(0xFFFF6B35)),
+    _StatItem(icon: AppAssets.completeOrder, value: '450', label: 'Complete Order', color: Color(0xFF22C55E)),
+    _StatItem(icon: AppAssets.totalServices, value: '14', label: 'Total Services', color: Color(0xFF3B82F6)),
+    _StatItem(icon: AppAssets.todayEarning, value: '\$320', label: 'Today Earning', color: Color(0xFFF59E0B)),
+    _StatItem(icon: AppAssets.totalEarning, value: '\$50K', label: 'Total Earning', color: Color(0xFF8B5CF6)),
   ];
 
   const _StatsSection();
@@ -243,7 +245,7 @@ class _StatItem {
     required this.label,
     required this.color,
   });
-  final IconData icon;
+  final String icon;
   final String value;
   final String label;
   final Color color;
@@ -277,7 +279,11 @@ class _StatCard extends StatelessWidget {
               color: item.color.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(AppSizes.radiusS),
             ),
-            child: Icon(item.icon, color: item.color, size: AppSizes.iconM),
+            padding: const EdgeInsets.all(8.0),
+            child: SvgPicture.asset(
+              item.icon,
+              colorFilter: ColorFilter.mode(item.color, BlendMode.srcIn),
+            ),
           ),
           const SizedBox(width: AppSizes.paddingS),
           Expanded(
@@ -319,7 +325,7 @@ class _TransactionsSection extends StatelessWidget {
   final List<_TxItem> _transactions = const [
     _TxItem(
       type: 'Withdraw',
-      icon: Icons.arrow_upward_rounded,
+      iconPath: AppAssets.withdraw,
       iconColor: Color(0xFFFF6B35),
       iconBg: Color(0xFFFFF0EB),
       time: '3:02 PM',
@@ -329,7 +335,7 @@ class _TransactionsSection extends StatelessWidget {
     ),
     _TxItem(
       type: 'Withdraw',
-      icon: Icons.arrow_upward_rounded,
+      iconPath: AppAssets.withdraw,
       iconColor: Color(0xFFFF6B35),
       iconBg: Color(0xFFFFF0EB),
       time: '3:02 PM',
@@ -339,7 +345,7 @@ class _TransactionsSection extends StatelessWidget {
     ),
     _TxItem(
       type: 'PayPal Payment',
-      icon: Icons.paypal_rounded,
+      iconPath: AppAssets.paypal,
       iconColor: Color(0xFF003087),
       iconBg: Color(0xFFE8F0FE),
       time: '3:02 PM',
@@ -394,7 +400,7 @@ class _TransactionsSection extends StatelessWidget {
 class _TxItem {
   const _TxItem({
     required this.type,
-    required this.icon,
+    required this.iconPath,
     required this.iconColor,
     required this.iconBg,
     required this.time,
@@ -403,7 +409,7 @@ class _TxItem {
     required this.isNegative,
   });
   final String type;
-  final IconData icon;
+  final String iconPath;
   final Color iconColor;
   final Color iconBg;
   final String time;
@@ -445,7 +451,12 @@ class _TransactionTile extends StatelessWidget {
               color: item.iconBg,
               borderRadius: BorderRadius.circular(AppSizes.radiusM),
             ),
-            child: Icon(item.icon, color: item.iconColor, size: AppSizes.iconM),
+            padding: const EdgeInsets.all(10),
+            child: Image.asset(
+              item.iconPath,
+              width: AppSizes.iconL,
+              height: AppSizes.iconL,
+            ),
           ),
           const SizedBox(width: AppSizes.paddingM),
           // Label + time
