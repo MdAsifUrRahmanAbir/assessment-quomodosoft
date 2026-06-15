@@ -26,16 +26,15 @@ class DashboardAvatar extends StatelessWidget {
     if (avatarUrl == null || avatarUrl.isEmpty || isPlaceholder) {
       fullUrl = "https://i.pravatar.cc/150?img=33";
     } else {
-      fullUrl = avatarUrl.startsWith('http')
-          ? avatarUrl
-          : "${ApiEndpoint.mainDomain}/$avatarUrl";
+      final cleanUrl = avatarUrl.startsWith('/') ? avatarUrl.substring(1) : avatarUrl;
+      fullUrl = avatarUrl.startsWith('http') ? avatarUrl : "${ApiEndpoint.mainDomain}/$cleanUrl";
     }
 
     return ClipOval(
       child: Image.network(
         fullUrl,
         fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => const Icon(Icons.person, color: AppColors.textWhite, size: 20),
+        errorBuilder: (context, error, stackTrace) => const Icon(Icons.person, color: AppColors.textWhite, size: 20),
       ),
     );
   }

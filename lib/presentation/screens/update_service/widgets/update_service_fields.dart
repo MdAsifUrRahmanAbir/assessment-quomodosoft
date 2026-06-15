@@ -31,9 +31,8 @@ class _UpdateServiceFieldsState extends State<UpdateServiceFields> {
           hint: 'Name here',
           controller: cubit.updateNameCtrl,
           enabled: !widget.isLoading,
-          validator: (v) => (v == null || v.isEmpty)
-              ? 'Service name is required'
-              : null,
+          fillColor: Colors.white,
+          validator: (v) => (v == null || v.isEmpty) ? 'Service name is required' : null,
         ),
         const SizedBox(height: AppSizes.paddingM),
         Row(
@@ -45,8 +44,8 @@ class _UpdateServiceFieldsState extends State<UpdateServiceFields> {
                 controller: cubit.updatePriceCtrl,
                 keyboardType: TextInputType.number,
                 enabled: !widget.isLoading,
-                validator: (v) =>
-                    (v == null || v.isEmpty) ? 'Required' : null,
+                fillColor: Colors.white,
+                validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
               ),
             ),
             const SizedBox(width: AppSizes.paddingM),
@@ -66,8 +65,7 @@ class _UpdateServiceFieldsState extends State<UpdateServiceFields> {
                       onChanged: (val) {
                         if (!widget.isLoading) {
                           setState(() {
-                            cubit.selectedCategoryForUpdate =
-                                val ?? cubit.selectedCategoryForUpdate;
+                            cubit.selectedCategoryForUpdate = val ?? cubit.selectedCategoryForUpdate;
                           });
                         }
                       },
@@ -82,9 +80,8 @@ class _UpdateServiceFieldsState extends State<UpdateServiceFields> {
           controller: cubit.updateDescCtrl,
           maxLines: 4,
           enabled: !widget.isLoading,
-          validator: (v) => (v == null || v.isEmpty)
-              ? 'Description is required'
-              : null,
+          fillColor: Colors.white,
+          validator: (v) => (v == null || v.isEmpty) ? 'Description is required' : null,
         ),
       ],
     );

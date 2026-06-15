@@ -21,15 +21,11 @@ class DashboardTransactionTile extends StatelessWidget {
               Container(
                 width: 44,
                 height: 44,
-                decoration: BoxDecoration(
-                  color: item.iconBg,
-                  shape: BoxShape.circle,
-                ),
                 padding: const EdgeInsets.all(10),
                 child: Image.asset(
                   item.iconPath,
-                  width: 24,
-                  height: 24,
+                  width: 26,
+                  height: 26,
                 ),
               ),
               const SizedBox(width: 12),

@@ -68,6 +68,7 @@ class AppTheme {
         appBarTheme: AppBarTheme(
           backgroundColor: AppColors.scaffold,
           elevation: 0,
+          scrolledUnderElevation: 0,
           centerTitle: true,
           titleTextStyle: GoogleFonts.poppins(
             color: AppColors.textDark,

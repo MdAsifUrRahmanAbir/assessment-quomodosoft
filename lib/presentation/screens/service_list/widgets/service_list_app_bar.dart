@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/routes/app_routes.dart';
+import '../../../bloc/navigation/navigation_cubit.dart';
 
 class ServiceListAppBar extends StatelessWidget implements PreferredSizeWidget {
   const ServiceListAppBar({super.key});
@@ -11,16 +12,17 @@ class ServiceListAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       backgroundColor: AppColors.scaffold,
       elevation: 0,
+      scrolledUnderElevation: 0,
       leadingWidth: 56,
       leading: Center(
         child: GestureDetector(
-          onTap: () => Navigator.pushReplacementNamed(context, AppRoutes.dashboard),
+          onTap: () => context.read<NavigationCubit>().setTab(0),
           child: Container(
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border.all(color: const Color(0xFFE2E8F0), width: 1.0),
+              color: Colors.transparent,
+              border: Border.all(color: const Color(0xFFE2E8F0), width: 2.0),
               borderRadius: BorderRadius.circular(10.0),
             ),
             child: const Icon(

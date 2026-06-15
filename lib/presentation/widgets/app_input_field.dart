@@ -17,6 +17,7 @@ class AppInputField extends StatelessWidget {
     this.validator,
     this.maxLines = 1,
     this.onChanged,
+    this.fillColor,
     FocusNode? focusNode,
   }) : _focusNode = focusNode ?? FocusNode();
 
@@ -31,21 +32,41 @@ class AppInputField extends StatelessWidget {
   final String? Function(String?)? validator;
   final int? maxLines;
   final ValueChanged<String>? onChanged;
+  final Color? fillColor;
   final FocusNode _focusNode;
 
   @override
   Widget build(BuildContext context) {
+    final Widget labelWidget = label.endsWith('*')
+        ? RichText(
+            text: TextSpan(
+              style: GoogleFonts.inter(
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                color: const Color(0xFF64748B),
+              ),
+              children: [
+                TextSpan(text: label.substring(0, label.length - 1)),
+                const TextSpan(
+                  text: '*',
+                  style: TextStyle(color: Color(0xFF2563EB), fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+          )
+        : Text(
+            label,
+            style: GoogleFonts.inter(
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+              color: const Color(0xFF64748B),
+            ),
+          );
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: GoogleFonts.inter(
-            fontSize: 13,
-            fontWeight: FontWeight.w500,
-            color: const Color(0xFF64748B), // Slate-500
-          ),
-        ),
+        labelWidget,
         const SizedBox(height: 6),
         AnimatedBuilder(
           animation: _focusNode,
@@ -62,7 +83,7 @@ class AppInputField extends StatelessWidget {
               focusNode: _focusNode,
               style: GoogleFonts.inter(
                 fontSize: 14,
-                color: const Color(0xFF0F172A), // Slate-900
+                color: const Color(0xFF0F172A),
                 fontWeight: FontWeight.w400,
               ),
               decoration: InputDecoration(
@@ -70,25 +91,22 @@ class AppInputField extends StatelessWidget {
                 suffixIcon: suffixIcon,
                 prefixIcon: prefixIcon,
                 filled: true,
-                fillColor: isFocused ? Colors.white : const Color(0xFFF8FAFC), // Slate-50
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 14,
-                ),
+                fillColor: fillColor ?? (isFocused ? Colors.white : const Color(0xFFF8FAFC)),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide.none,
+                  borderSide: const BorderSide(color: Color(0xFFEFF6FF), width: 1),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide.none,
+                  borderSide: const BorderSide(color: Color(0xFFEFF6FF), width: 1),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
                 ),
                 hintStyle: GoogleFonts.inter(
-                  color: const Color(0xFF94A3B8), // Slate-400
+                  color: const Color(0xFF94A3B8),
                   fontSize: 14,
                 ),
               ),

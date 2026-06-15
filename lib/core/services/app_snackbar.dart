@@ -77,4 +77,58 @@ class AppSnackBar {
         ),
       );
   }
+
+  static void showServerErrorDialog() {
+    final context = navigatorKey.currentContext;
+    if (context == null) return;
+
+    showDialog(
+      context: context,
+      builder: (dialogCtx) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSizes.radiusL),
+        ),
+        title: Row(
+          children: [
+            const Icon(Icons.error_outline_rounded,
+                color: AppColors.warning, size: 28),
+            const SizedBox(width: 8),
+            Text(
+              'Server Error',
+              style: GoogleFonts.poppins(
+                fontWeight: FontWeight.w700,
+                fontSize: AppSizes.fontXL,
+                color: AppColors.textDark,
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          'We encountered an unexpected server issue. Please try again later.',
+          style: GoogleFonts.poppins(
+            color: AppColors.textMedium,
+            fontSize: AppSizes.fontM,
+          ),
+        ),
+        actions: [
+          ElevatedButton(
+            onPressed: () => Navigator.pop(dialogCtx),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppSizes.radiusM),
+              ),
+            ),
+            child: Text(
+              'OK',
+              style: GoogleFonts.poppins(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }

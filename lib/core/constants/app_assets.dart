@@ -7,6 +7,7 @@ class AppAssets {
   static const String edit = 'assets/icon/edit.png';
   static const String home = 'assets/icon/home.svg';
   static const String homeActive = 'assets/icon/homeActive.svg';
+  static const String imageRectangle = 'assets/icon/imageRectangle.svg';
   static const String paypal = 'assets/icon/paypal.png';
   static const String pendingOrder = 'assets/icon/pendingOrder.svg';
   static const String service = 'assets/icon/service.svg';

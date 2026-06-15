@@ -10,7 +10,7 @@ class AppColors {
   static const Color primaryLight  = Color(0xFF8B5CF6);
 
   // ── Background ───────────────────────────────────────────────
-  static const Color scaffold      = Color(0xFFFFFFFF);
+  static const Color scaffold      = Color(0xFFF3F3F3);
   static const Color cardBg        = Color(0xFFFFFFFF);
   static const Color inputBg       = Color(0xFFF5F5F5);
   static const Color chipBg        = Color(0xFFF0EAFF); // light purple tint

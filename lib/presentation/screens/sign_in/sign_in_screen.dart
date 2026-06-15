@@ -69,7 +69,7 @@ class _SignInView extends StatelessWidget {
         final isLoading = state is SignInLoading;
 
         return Scaffold(
-          backgroundColor: AppColors.scaffold,
+          backgroundColor: Colors.white,
           appBar: const PrimaryAppBar(title: 'Sign In'),
           body: SafeArea(
             child: SingleChildScrollView(

@@ -17,13 +17,26 @@ class CreateServiceImagePicker extends StatefulWidget {
 }
 
 class _CreateServiceImagePickerState extends State<CreateServiceImagePicker> {
+  bool _isPicking = false;
+
   Future<void> _pickImage() async {
-    final picker = ImagePicker();
-    final picked = await picker.pickImage(source: ImageSource.gallery);
-    if (picked != null) {
-      setState(() {
-        context.read<ServiceCubit>().selectedImagePathForCreate = picked.path;
-      });
+    if (_isPicking) return;
+    setState(() => _isPicking = true);
+
+    try {
+      final picker = ImagePicker();
+      final picked = await picker.pickImage(source: ImageSource.gallery);
+      if (picked != null && mounted) {
+        setState(() {
+          context.read<ServiceCubit>().selectedImagePathForCreate = picked.path;
+        });
+      }
+    } catch (_) {
+      // Safe guard against platform picker issues
+    } finally {
+      if (mounted) {
+        setState(() => _isPicking = false);
+      }
     }
   }
 
@@ -32,7 +45,7 @@ class _CreateServiceImagePickerState extends State<CreateServiceImagePicker> {
     final cubit = context.read<ServiceCubit>();
 
     return ImageUploadBox(
-      onTap: widget.isLoading ? null : _pickImage,
+      onTap: (widget.isLoading || _isPicking) ? null : _pickImage,
       imagePath: cubit.selectedImagePathForCreate,
     );
   }

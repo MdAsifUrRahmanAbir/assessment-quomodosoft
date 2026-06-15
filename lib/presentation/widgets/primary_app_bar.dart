@@ -18,8 +18,9 @@ class PrimaryAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor: AppColors.scaffold,
+      backgroundColor: Colors.white,
       elevation: 0,
+      scrolledUnderElevation: 0,
       leadingWidth: 56,
       leading: showBackButton
           ? Center(

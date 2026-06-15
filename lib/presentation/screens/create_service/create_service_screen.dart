@@ -43,34 +43,44 @@ class _CreateServiceView extends StatelessWidget {
           appBar: AppBar(
             backgroundColor: AppColors.scaffold,
             elevation: 0,
+            scrolledUnderElevation: 0,
+            centerTitle: true,
             leading: GestureDetector(
               onTap: () => Navigator.pop(context),
               child: Container(
-                margin: const EdgeInsets.only(left: AppSizes.paddingM),
-                child: Container(
-                  width: 36,
-                  height: 36,
-                  decoration: BoxDecoration(
-                    color: AppColors.inputBg,
-                    borderRadius: BorderRadius.circular(AppSizes.radiusS),
-                  ),
-                  child: const Icon(Icons.arrow_back_ios_new_rounded,
-                      color: AppColors.textDark, size: AppSizes.iconS),
+                margin: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: const Color(0xFFE5E7EB)),
+                  // boxShadow: [
+                  //   BoxShadow(
+                  //     color: Colors.black.withValues(alpha: 0.03),
+                  //     blurRadius: 4,
+                  //     offset: const Offset(0, 2),
+                  //   ),
+                  // ],
+                ),
+                alignment: Alignment.center,
+                child: const Icon(
+                  Icons.chevron_left_rounded,
+                  color: Color(0xFF1F2937),
+                  size: 20,
                 ),
               ),
             ),
             title: Text(
               'Add New Services',
-              style: GoogleFonts.poppins(
-                color: AppColors.textDark,
-                fontSize: AppSizes.fontL,
+              style: GoogleFonts.inter(
+                color: const Color(0xFF1F2937),
+                fontSize: 18,
                 fontWeight: FontWeight.w700,
               ),
             ),
           ),
           body: SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: AppSizes.paddingM),
+              padding: const EdgeInsets.all(AppSizes.paddingM),
               child: CreateServiceForm(isLoading: isLoading),
             ),
           ),

@@ -1,3 +1,4 @@
+import 'dart:io';
 import '../../../core/errors/exceptions.dart';
 import '../../../core/services/api_endpoint.dart';
 import '../../../core/services/api_service.dart';
@@ -108,11 +109,21 @@ class ServiceRemoteDatasourceImpl implements ServiceRemoteDatasource {
       if (service.translateId != null) 'translate_id': service.translateId!.toString(),
     };
 
+    for (int i = 0; i < service.features.length; i++) {
+      if (i == 0) {
+        body['package_features[0]'] = service.features[0];
+      } else {
+        body['package_features[]'] = service.features[i];
+      }
+    }
+
     final List<String> fieldList = [];
     final List<String> pathList = [];
 
     // If the imageUrl is a local file path, upload it as a file
-    if (service.imageUrl.isNotEmpty && !service.imageUrl.startsWith('http')) {
+    if (service.imageUrl.isNotEmpty &&
+        !service.imageUrl.startsWith('http') &&
+        File(service.imageUrl).existsSync()) {
       fieldList.add('image');
       pathList.add(service.imageUrl);
     }

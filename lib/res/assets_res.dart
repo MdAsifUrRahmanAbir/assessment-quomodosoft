@@ -8,4 +8,6 @@ class AssetsRes {
 
   static const String PROJECT_NAME = 'assessment_quomodosoft';
   static const String PROJECT_VERSION = '1.0.0+1';
+  static const String DASHBOARDBG = 'assets/icon/dashboardBg.png';
+  static const String IMAGERECTANGLE = 'assets/icon/imageRectangle.svg';
 }

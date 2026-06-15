@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_sizes.dart';
+import '../../../../core/services/api_endpoint.dart';
 import '../../../../domain/entities/service_entity.dart';
 
 class ServiceDetailsImageHeader extends StatelessWidget {
@@ -14,10 +15,15 @@ class ServiceDetailsImageHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cleanUrl = service.imageUrl.startsWith('/') ? service.imageUrl.substring(1) : service.imageUrl;
+    final formattedUrl = service.imageUrl.startsWith('http') ? service.imageUrl : "${ApiEndpoint.mainDomain}/$cleanUrl";
+
     return SliverAppBar(
       expandedHeight: 280,
       pinned: true,
       backgroundColor: AppColors.scaffold,
+      elevation: 0,
+      scrolledUnderElevation: 0,
       leading: GestureDetector(
         onTap: () => Navigator.pop(context),
         child: Container(
@@ -39,7 +45,7 @@ class ServiceDetailsImageHeader extends StatelessWidget {
           fit: StackFit.expand,
           children: [
             Image.network(
-              service.imageUrl,
+              formattedUrl,
               fit: BoxFit.cover,
               errorBuilder: (ctx, err, stack) => Container(
                 color: AppColors.chipBg,
@@ -65,32 +71,20 @@ class ServiceDetailsImageHeader extends StatelessWidget {
               child: Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: AppSizes.paddingS, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: AppColors.textDark,
-                      borderRadius: BorderRadius.circular(AppSizes.radiusS),
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: AppSizes.paddingS, vertical: 4),
+                    decoration: BoxDecoration(color: AppColors.textDark, borderRadius: BorderRadius.circular(AppSizes.radiusS)),
                     child: Text('\$${service.price.toStringAsFixed(0)}',
-                        style: GoogleFonts.poppins(
-                            color: AppColors.textWhite,
-                            fontWeight: FontWeight.w700,
-                            fontSize: AppSizes.fontM)),
+                        style: GoogleFonts.poppins(color: AppColors.textWhite, fontWeight: FontWeight.w700, fontSize: AppSizes.fontM)),
                   ),
                   const SizedBox(width: AppSizes.paddingS),
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
                       color: service.isActive ? AppColors.success : AppColors.textLight,
-                      borderRadius:
-                          BorderRadius.circular(AppSizes.radiusFull),
+                      borderRadius: BorderRadius.circular(AppSizes.radiusFull),
                     ),
                     child: Text(service.isActive ? 'Active' : 'Inactive',
-                        style: GoogleFonts.poppins(
-                            color: AppColors.textWhite,
-                            fontWeight: FontWeight.w600,
-                            fontSize: AppSizes.fontXS)),
+                        style: GoogleFonts.poppins(color: AppColors.textWhite, fontWeight: FontWeight.w600, fontSize: AppSizes.fontXS)),
                   ),
                 ],
               ),

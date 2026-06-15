@@ -63,9 +63,13 @@ class ServiceModel {
 
     // Parse average rating and review count safely from string or num keys
     final double parsedRating = double.tryParse(data['average_rating']?.toString() ?? '') ?? 
+                                (data['average_rating'] as num?)?.toDouble() ??
+                                double.tryParse(data['rating']?.toString() ?? '') ?? 
                                 (data['rating'] as num?)?.toDouble() ?? 0.0;
     
-    final int parsedReviewCount = (data['total_review'] as num?)?.toInt() ?? 
+    final int parsedReviewCount = int.tryParse(data['total_review']?.toString() ?? '') ??
+                                  (data['total_review'] as num?)?.toInt() ??
+                                  int.tryParse(data['review_count']?.toString() ?? '') ??
                                   (data['review_count'] as num?)?.toInt() ?? 0;
 
     // Parse thumbnail or standard image url

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_sizes.dart';
 import '../../../../core/constants/app_assets.dart';
 import 'dashboard_transaction_tile.dart';
@@ -45,7 +44,7 @@ class DashboardTransactions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: AppSizes.paddingM),
+      padding: const EdgeInsets.symmetric(horizontal: AppSizes.paddingL),
       child: Column(
         children: [
           Row(
@@ -65,15 +64,20 @@ class DashboardTransactions extends StatelessWidget {
                   'View all',
                   style: GoogleFonts.inter(
                     fontSize: 14,
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.w600,
+                    color: const Color(0xFF2563EB),
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ),
             ],
           ),
           const SizedBox(height: 8),
-          ...(_transactions.map((tx) => DashboardTransactionTile(item: tx))),
+          ...(_transactions.map((tx) => Column(
+            children: [
+              DashboardTransactionTile(item: tx),
+              Divider(height: 4, color: Colors.black.withValues(alpha: .1),)
+            ],
+          ))),
         ],
       ),
     );

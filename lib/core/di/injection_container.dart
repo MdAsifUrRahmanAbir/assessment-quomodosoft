@@ -16,6 +16,7 @@ import '../../domain/usecases/sign_in_usecase.dart';
 import '../../domain/usecases/update_service_usecase.dart';
 import '../../presentation/bloc/auth/sign_in_cubit.dart';
 import '../../presentation/bloc/service/service_cubit.dart';
+import '../../presentation/bloc/navigation/navigation_cubit.dart';
 
 /// Global service locator instance.
 final sl = GetIt.instance;
@@ -66,6 +67,7 @@ Future<void> initDependencies() async {
 
   // ── 5. Cubits ──────────────────────────────────────────────────────────────
   sl.registerFactory<SignInCubit>(() => SignInCubit());
+  sl.registerFactory<NavigationCubit>(() => NavigationCubit());
 
   sl.registerFactory<ServiceCubit>(
     () => ServiceCubit(

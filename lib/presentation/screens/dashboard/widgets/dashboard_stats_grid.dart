@@ -7,11 +7,11 @@ import 'dashboard_stat_model.dart';
 class DashboardStatsGrid extends StatelessWidget {
   final List<DashboardStatModel> _stats = const [
     DashboardStatModel(icon: AppAssets.activeOrder, value: '12', label: 'Active Order'),
-    DashboardStatModel(icon: AppAssets.pendingOrder, value: '04', label: 'Pending Order', isSvg: false),
+    DashboardStatModel(icon: AppAssets.pendingOrder, value: '04', label: 'Pending Order'),
     DashboardStatModel(icon: AppAssets.completeOrder, value: '450', label: 'Complete Order'),
     DashboardStatModel(icon: AppAssets.totalServices, value: '14', label: 'Total Services'),
     DashboardStatModel(icon: AppAssets.todayEarning, value: '\$320', label: 'Today Earning'),
-    DashboardStatModel(icon: AppAssets.totalEarning, value: '\$50K', label: 'TotalEarning'),
+    DashboardStatModel(icon: AppAssets.totalEarning, value: '\$50K', label: 'Total Earning'),
   ];
 
   const DashboardStatsGrid({super.key});
@@ -19,9 +19,10 @@ class DashboardStatsGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(AppSizes.paddingM),
+      padding: const EdgeInsets.fromLTRB(AppSizes.paddingL, AppSizes.paddingM, AppSizes.paddingL, AppSizes.paddingM),
       child: GridView.builder(
         shrinkWrap: true,
+        padding: EdgeInsets.zero,
         physics: const NeverScrollableScrollPhysics(),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,

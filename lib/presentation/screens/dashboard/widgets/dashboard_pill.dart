@@ -15,27 +15,22 @@ class DashboardPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(AppSizes.radiusFull),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, color: AppColors.textWhite, size: 16),
-          const SizedBox(width: 4),
-          Text(
-            label,
-            style: GoogleFonts.inter(
-              color: AppColors.textWhite,
-              fontSize: AppSizes.fontS,
-              fontWeight: FontWeight.w600,
-            ),
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, color: AppColors.textWhite, size: 16),
+        const SizedBox(width: 4),
+        Text(
+          label,
+          style: GoogleFonts.inter(
+            color: AppColors.textWhite,
+            fontSize: AppSizes.fontS,
+            fontWeight: FontWeight.w600,
           ),
-          const Icon(Icons.keyboard_arrow_down_rounded, color: AppColors.textWhite, size: 16),
-        ],
-      ),
+        ),
+        const SizedBox(width: 4),
+        const Icon(Icons.keyboard_arrow_down_rounded, color: AppColors.textWhite, size: 16),
+      ],
     );
   }
 }

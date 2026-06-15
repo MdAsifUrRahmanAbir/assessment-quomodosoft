@@ -7,11 +7,7 @@ import '../../../widgets/app_input_field.dart';
 import '../../../widgets/service_form_widgets.dart';
 
 class CreateServiceFields extends StatefulWidget {
-  const CreateServiceFields({
-    super.key,
-    required this.isLoading,
-  });
-
+  const CreateServiceFields({super.key, required this.isLoading});
   final bool isLoading;
 
   @override
@@ -22,9 +18,7 @@ class _CreateServiceFieldsState extends State<CreateServiceFields> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _loadCategories();
-    });
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadCategories());
   }
 
   Future<void> _loadCategories() async {
@@ -32,9 +26,7 @@ class _CreateServiceFieldsState extends State<CreateServiceFields> {
     if (cubit.categories.isNotEmpty) {
       setState(() {
         cubit.loadingCategoriesForCreate = false;
-        if (cubit.selectedCategoryForCreate == null) {
-          cubit.selectedCategoryForCreate = cubit.categories.first;
-        }
+        cubit.selectedCategoryForCreate ??= cubit.categories.first;
       });
       return;
     }
@@ -62,9 +54,8 @@ class _CreateServiceFieldsState extends State<CreateServiceFields> {
           hint: 'Name here',
           controller: cubit.createNameCtrl,
           enabled: !widget.isLoading,
-          validator: (v) => (v == null || v.isEmpty)
-              ? 'Service name is required'
-              : null,
+          fillColor: Colors.white,
+          validator: (v) => (v == null || v.isEmpty) ? 'Service name is required' : null,
         ),
         const SizedBox(height: AppSizes.paddingM),
         Row(
@@ -76,30 +67,21 @@ class _CreateServiceFieldsState extends State<CreateServiceFields> {
                 controller: cubit.createPriceCtrl,
                 keyboardType: TextInputType.number,
                 enabled: !widget.isLoading,
-                validator: (v) =>
-                    (v == null || v.isEmpty) ? 'Required' : null,
+                fillColor: Colors.white,
+                validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
               ),
             ),
             const SizedBox(width: AppSizes.paddingM),
             Expanded(
               child: cubit.selectedCategoryForCreate == null
-                  ? const Center(
-                      child: SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: CircularProgressIndicator(strokeWidth: 2.0),
-                      ),
-                    )
+                  ? const Center(child: SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2.0)))
                   : CategoryDropdown<CategoryEntity>(
                       value: cubit.selectedCategoryForCreate!,
                       items: cubit.categories,
                       itemAsString: (cat) => cat.name,
                       onChanged: (val) {
                         if (!widget.isLoading) {
-                          setState(() {
-                            cubit.selectedCategoryForCreate =
-                                val ?? cubit.selectedCategoryForCreate;
-                          });
+                          setState(() => cubit.selectedCategoryForCreate = val ?? cubit.selectedCategoryForCreate);
                         }
                       },
                     ),
@@ -113,9 +95,8 @@ class _CreateServiceFieldsState extends State<CreateServiceFields> {
           controller: cubit.createDescCtrl,
           maxLines: 4,
           enabled: !widget.isLoading,
-          validator: (v) => (v == null || v.isEmpty)
-              ? 'Description is required'
-              : null,
+          fillColor: Colors.white,
+          validator: (v) => (v == null || v.isEmpty) ? 'Description is required' : null,
         ),
       ],
     );

@@ -7,10 +7,34 @@ import 'package:assessment_quomodosoft/core/routes/app_routes.dart';
 import '../utils/app_logger.dart';
 import 'local_storage_service.dart';
 import 'app_snackbar.dart';
-import '../errors/common_error_model.dart';
 import '../errors/exceptions.dart';
 
 final _log = appLogger(ApiMethod);
+
+// ── Sanitizers for terminal security ──────────────────────────────────────────
+String _sanitizeUrl(String url) {
+  try {
+    final uri = Uri.parse(url);
+    if (uri.queryParameters.containsKey('token')) {
+      final params = Map<String, String>.from(uri.queryParameters);
+      params['token'] = '***';
+      return uri.replace(queryParameters: params).toString();
+    }
+  } catch (_) {}
+  return url;
+}
+
+Map<String, dynamic> _sanitizeBody(Map<String, dynamic> body) {
+  final Map<String, dynamic> sanitized = {};
+  body.forEach((key, value) {
+    if (key.toLowerCase().contains('password')) {
+      sanitized[key] = '***';
+    } else {
+      sanitized[key] = value;
+    }
+  });
+  return sanitized;
+}
 
 /// Returns headers for public (unauthenticated) requests.
 Map<String, String> _basicHeaders() => {
@@ -51,7 +75,7 @@ class ApiMethod {
   /// Evaluates connection status during host lookup failures.
   /// Resolves google.com to verify if the client has internet access.
   Future<Never> _handleSocketException(SocketException e, String url) async {
-    _log.e('SocketException on $url: $e');
+    _log.e('SocketException on ${_sanitizeUrl(url)}: $e');
     if (e.message.toLowerCase().contains('failed host lookup')) {
       try {
         final lookup = await InternetAddress.lookup('google.com')
@@ -75,7 +99,7 @@ class ApiMethod {
     bool showErrorMessage = true,
   }) async {
     url = _prepareUrl(url);
-    _log.i('|📍 GET $url');
+    _log.i('|📍 GET ${_sanitizeUrl(url)}');
     try {
       final res = await http
           .get(
@@ -89,10 +113,10 @@ class ApiMethod {
     } on SocketException catch (e) {
       await _handleSocketException(e, url);
     } on TimeoutException catch (e) {
-      _log.e('TimeoutException on GET $url: $e');
+      _log.e('TimeoutException on GET ${_sanitizeUrl(url)}: $e');
       throw const NetworkException('Request timed out. Please try again.');
     } catch (e) {
-      _log.e('Error on GET $url: $e');
+      _log.e('Error on GET ${_sanitizeUrl(url)}: $e');
       if (e is FormatException || e is ArgumentError) {
         throw const ServerException('Invalid URL or request format.');
       }
@@ -113,7 +137,7 @@ class ApiMethod {
     bool showErrorMessage = true,
   }) async {
     url = _prepareUrl(url);
-    _log.i('|📍 POST $url | body: $body');
+    _log.i('|📍 POST ${_sanitizeUrl(url)} | body: ${_sanitizeBody(body)}');
     try {
       final res = await http
           .post(
@@ -128,10 +152,10 @@ class ApiMethod {
     } on SocketException catch (e) {
       await _handleSocketException(e, url);
     } on TimeoutException catch (e) {
-      _log.e('TimeoutException on POST $url: $e');
+      _log.e('TimeoutException on POST ${_sanitizeUrl(url)}: $e');
       throw const NetworkException('Request timed out. Please try again.');
     } catch (e) {
-      _log.e('Error on POST $url: $e');
+      _log.e('Error on POST ${_sanitizeUrl(url)}: $e');
       if (e is FormatException || e is ArgumentError) {
         throw const ServerException('Invalid URL or request format.');
       }
@@ -152,7 +176,7 @@ class ApiMethod {
     bool showErrorMessage = true,
   }) async {
     url = _prepareUrl(url);
-    _log.i('|📍 PUT $url | body: $body');
+    _log.i('|📍 PUT ${_sanitizeUrl(url)} | body: ${_sanitizeBody(body)}');
     try {
       final res = await http
           .put(
@@ -167,10 +191,10 @@ class ApiMethod {
     } on SocketException catch (e) {
       await _handleSocketException(e, url);
     } on TimeoutException catch (e) {
-      _log.e('TimeoutException on PUT $url: $e');
+      _log.e('TimeoutException on PUT ${_sanitizeUrl(url)}: $e');
       throw const NetworkException('Request timed out. Please try again.');
     } catch (e) {
-      _log.e('Error on PUT $url: $e');
+      _log.e('Error on PUT ${_sanitizeUrl(url)}: $e');
       if (e is FormatException || e is ArgumentError) {
         throw const ServerException('Invalid URL or request format.');
       }
@@ -190,7 +214,7 @@ class ApiMethod {
     bool showErrorMessage = true,
   }) async {
     url = _prepareUrl(url);
-    _log.i('|📍 DELETE $url');
+    _log.i('|📍 DELETE ${_sanitizeUrl(url)}');
     try {
       final res = await http
           .delete(
@@ -204,10 +228,10 @@ class ApiMethod {
     } on SocketException catch (e) {
       await _handleSocketException(e, url);
     } on TimeoutException catch (e) {
-      _log.e('TimeoutException on DELETE $url: $e');
+      _log.e('TimeoutException on DELETE ${_sanitizeUrl(url)}: $e');
       throw const NetworkException('Request timed out. Please try again.');
     } catch (e) {
-      _log.e('Error on DELETE $url: $e');
+      _log.e('Error on DELETE ${_sanitizeUrl(url)}: $e');
       if (e is FormatException || e is ArgumentError) {
         throw const ServerException('Invalid URL or request format.');
       }
@@ -228,7 +252,7 @@ class ApiMethod {
     bool showErrorMessage = true,
   }) async {
     url = _prepareUrl(url);
-    _log.i('|📍 MULTIPART $url');
+    _log.i('|📍 MULTIPART ${_sanitizeUrl(url)}');
     try {
       final request = http.MultipartRequest('POST', Uri.parse(url))
         ..fields.addAll(body)
@@ -241,10 +265,10 @@ class ApiMethod {
     } on SocketException catch (e) {
       await _handleSocketException(e, url);
     } on TimeoutException catch (e) {
-      _log.e('TimeoutException on MULTIPART $url: $e');
+      _log.e('TimeoutException on MULTIPART ${_sanitizeUrl(url)}: $e');
       throw const NetworkException('Request timed out. Please try again.');
     } catch (e) {
-      _log.e('Error on MULTIPART $url: $e');
+      _log.e('Error on MULTIPART ${_sanitizeUrl(url)}: $e');
       if (e is FormatException || e is ArgumentError) {
         throw const ServerException('Invalid URL or request format.');
       }
@@ -265,7 +289,7 @@ class ApiMethod {
     bool showErrorMessage = true,
   }) async {
     url = _prepareUrl(url);
-    _log.i('|📍 MULTIPART-MULTI $url');
+    _log.i('|📍 MULTIPART-MULTI ${_sanitizeUrl(url)}');
     try {
       final request = http.MultipartRequest('POST', Uri.parse(url))
         ..fields.addAll(body)
@@ -282,10 +306,10 @@ class ApiMethod {
     } on SocketException catch (e) {
       await _handleSocketException(e, url);
     } on TimeoutException catch (e) {
-      _log.e('TimeoutException on MULTIPART-MULTI $url: $e');
+      _log.e('TimeoutException on MULTIPART-MULTI ${_sanitizeUrl(url)}: $e');
       throw const NetworkException('Request timed out. Please try again.');
     } catch (e) {
-      _log.e('Error on MULTIPART-MULTI $url: $e');
+      _log.e('Error on MULTIPART-MULTI ${_sanitizeUrl(url)}: $e');
       if (e is FormatException || e is ArgumentError) {
         throw const ServerException('Invalid URL or request format.');
       }
@@ -306,14 +330,15 @@ class ApiMethod {
     if (res.statusCode == 401) {
       LocalStorage.signOut();
       navigatorKey.currentState?.pushNamedAndRemoveUntil(AppRoutes.signIn, (route) => false);
-      String errorMsg = 'Unauthorized access.';
+      String errorMsg = 'Unauthenticated. Please login again.';
       try {
         final decoded = jsonDecode(res.body) as Map<String, dynamic>;
         errorMsg = decoded['message']?.toString() ??
                    decoded['notification']?.toString() ??
                    decoded['error']?.toString() ??
-                   'Unauthorized access.';
+                   'Unauthenticated. Please login again.';
       } catch (_) {}
+      AppSnackBar.error(errorMsg);
       throw AuthException(errorMsg);
     }
 
@@ -330,8 +355,9 @@ class ApiMethod {
     }
 
     // Server error
-    if (res.statusCode == 500) {
-      throw const ServerException('Internal server error. Please try again later.');
+    if (res.statusCode >= 500) {
+      AppSnackBar.showServerErrorDialog();
+      throw ServerException('Server error (${res.statusCode}). Please try again later.');
     }
 
     // Other client/server error codes (e.g. 400, 422, 403)

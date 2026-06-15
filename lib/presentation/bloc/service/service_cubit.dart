@@ -103,9 +103,14 @@ class ServiceCubit extends Cubit<ServiceState> {
     emit(const ServiceLoading());
 
     final result = await _getServices(page: 1);
+    if (isClosed) return;
     result.fold(
-      (failure) => emit(ServiceError(failure.message)),
+      (failure) {
+        if (isClosed) return;
+        emit(ServiceError(failure.message));
+      },
       (services) {
+        if (isClosed) return;
         if (services.isEmpty && !_hasDeletedMockServices) {
           emit(ServiceLoaded(_mockList, currentPage: 1, hasMore: false));
         } else {
@@ -128,9 +133,11 @@ class ServiceCubit extends Cubit<ServiceState> {
 
     result.fold(
       (failure) {
+        if (isClosed) return;
         emit(currentState.copyWith(isLoadingMore: false));
       },
       (newServices) {
+        if (isClosed) return;
         final updatedList = [...currentState.services, ...newServices];
         emit(ServiceLoaded(
           updatedList,
@@ -148,9 +155,14 @@ class ServiceCubit extends Cubit<ServiceState> {
     emit(const ServiceLoading());
 
     final result = await _createService(service);
+    if (isClosed) return;
     result.fold(
-      (failure) => emit(ServiceError(failure.message)),
+      (failure) {
+        if (isClosed) return;
+        emit(ServiceError(failure.message));
+      },
       (_) {
+        if (isClosed) return;
         emit(const ServiceOperationSuccess('Service published successfully!'));
         loadServices();
       },
@@ -192,9 +204,14 @@ class ServiceCubit extends Cubit<ServiceState> {
     emit(const ServiceLoading());
 
     final result = await _updateService(service);
+    if (isClosed) return;
     result.fold(
-      (failure) => emit(ServiceError(failure.message)),
+      (failure) {
+        if (isClosed) return;
+        emit(ServiceError(failure.message));
+      },
       (_) {
+        if (isClosed) return;
         emit(const ServiceOperationSuccess('Service updated successfully!'));
         loadServices();
       },
@@ -213,10 +230,17 @@ class ServiceCubit extends Cubit<ServiceState> {
       return;
     }
 
+    emit(const ServiceLoading());
+
     final result = await _deleteService(id);
+    if (isClosed) return;
     result.fold(
-      (failure) => emit(ServiceError(failure.message)),
+      (failure) {
+        if (isClosed) return;
+        emit(ServiceError(failure.message));
+      },
       (_) {
+        if (isClosed) return;
         emit(const ServiceOperationSuccess('Service deleted successfully!'));
         loadServices();
       },

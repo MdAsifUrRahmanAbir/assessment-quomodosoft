@@ -10,6 +10,7 @@ import '../../../widgets/service_card.dart';
 import 'service_list_add_button.dart';
 import 'service_list_delete_dialog.dart';
 import 'service_list_empty_state.dart';
+import 'service_list_loader.dart';
 
 class ServiceListView extends StatelessWidget {
   const ServiceListView({super.key});
@@ -41,60 +42,61 @@ class ServiceListView extends StatelessWidget {
             const SizedBox(height: AppSizes.paddingM),
             Expanded(
               child: isLoading
-                  ? const Center(
-                      child: CircularProgressIndicator(
-                        color: AppColors.primary,
-                      ),
-                    )
+                  ? const ServiceListLoader()
                   : services.isEmpty
                       ? const ServiceListEmptyState()
-                      : NotificationListener<ScrollNotification>(
-                          onNotification: (scrollInfo) {
-                            if (scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent - 200) {
-                              context.read<ServiceCubit>().loadMoreServices();
-                            }
-                            return true;
-                          },
-                          child: ListView.builder(
-                            padding: const EdgeInsets.fromLTRB(
-                                AppSizes.paddingM, 0, AppSizes.paddingM, 120),
-                            itemCount: services.length + (isLoadingMore ? 1 : 0),
-                            itemBuilder: (context, i) {
-                              if (i == services.length) {
-                                return const Padding(
-                                  padding: EdgeInsets.symmetric(vertical: AppSizes.paddingM),
-                                  child: Center(
-                                    child: CircularProgressIndicator(
-                                      color: AppColors.primary,
-                                    ),
-                                  ),
-                                );
+                      : RefreshIndicator(
+                          color: AppColors.primary,
+                          onRefresh: () => context.read<ServiceCubit>().loadServices(),
+                          child: NotificationListener<ScrollNotification>(
+                            onNotification: (scrollInfo) {
+                              if (scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent - 200) {
+                                context.read<ServiceCubit>().loadMoreServices();
                               }
-
-                              final s = services[i];
-                              return ServiceCard(
-                                title: s.title,
-                                category: s.category,
-                                price: s.price,
-                                rating: s.rating,
-                                reviewCount: s.reviewCount,
-                                imageUrl: s.imageUrl,
-                                date: s.date,
-                                isActive: s.isActive,
-                                onTap: () => Navigator.pushNamed(
-                                    context, AppRoutes.serviceDetails,
-                                    arguments: s),
-                                onEdit: () async {
-                                  await Navigator.pushNamed(
-                                      context, AppRoutes.updateService,
-                                      arguments: s);
-                                  if (context.mounted) {
-                                    context.read<ServiceCubit>().loadServices();
-                                  }
-                                },
-                                onDelete: () => showDeleteServiceDialog(context, s.id),
-                              );
+                              return true;
                             },
+                            child: ListView.builder(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              padding: const EdgeInsets.fromLTRB(
+                                  AppSizes.paddingM, 0, AppSizes.paddingM, 120),
+                              itemCount: services.length + (isLoadingMore ? 1 : 0),
+                              itemBuilder: (context, i) {
+                                if (i == services.length) {
+                                  return const Padding(
+                                    padding: EdgeInsets.symmetric(vertical: AppSizes.paddingM),
+                                    child: Center(
+                                      child: CircularProgressIndicator(
+                                        color: AppColors.primary,
+                                      ),
+                                    ),
+                                  );
+                                }
+
+                                final s = services[i];
+                                return ServiceCard(
+                                  title: s.title,
+                                  category: s.category,
+                                  price: s.price,
+                                  rating: s.rating,
+                                  reviewCount: s.reviewCount,
+                                  imageUrl: s.imageUrl,
+                                  date: s.date,
+                                  isActive: s.isActive,
+                                  onTap: () => Navigator.pushNamed(
+                                      context, AppRoutes.serviceDetails,
+                                      arguments: s),
+                                  onEdit: () async {
+                                    await Navigator.pushNamed(
+                                        context, AppRoutes.updateService,
+                                        arguments: s);
+                                    if (context.mounted) {
+                                      context.read<ServiceCubit>().loadServices();
+                                    }
+                                  },
+                                  onDelete: () => showDeleteServiceDialog(context, s.id),
+                                );
+                              },
+                            ),
                           ),
                         ),
             ),
