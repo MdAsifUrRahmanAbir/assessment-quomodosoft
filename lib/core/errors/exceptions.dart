@@ -4,7 +4,7 @@ class ServerException implements Exception {
   final String message;
 
   @override
-  String toString() => 'ServerException: $message';
+  String toString() => message;
 }
 
 /// Thrown when there is no network connectivity.
@@ -13,7 +13,7 @@ class NetworkException implements Exception {
   final String message;
 
   @override
-  String toString() => 'NetworkException: $message';
+  String toString() => message;
 }
 
 /// Thrown when a local cache read/write operation fails.
@@ -22,7 +22,7 @@ class CacheException implements Exception {
   final String message;
 
   @override
-  String toString() => 'CacheException: $message';
+  String toString() => message;
 }
 
 /// Thrown when authentication fails (401 / invalid credentials).
@@ -31,5 +31,5 @@ class AuthException implements Exception {
   final String message;
 
   @override
-  String toString() => 'AuthException: $message';
+  String toString() => message;
 }

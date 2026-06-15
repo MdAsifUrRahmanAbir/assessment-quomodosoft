@@ -9,6 +9,8 @@ import '../../domain/repository/auth_repository.dart';
 import '../../domain/repository/service_repository.dart';
 import '../../domain/usecases/create_service_usecase.dart';
 import '../../domain/usecases/delete_service_usecase.dart';
+import '../../domain/usecases/get_categories_usecase.dart';
+import '../../domain/usecases/get_service_by_id_usecase.dart';
 import '../../domain/usecases/get_services_usecase.dart';
 import '../../domain/usecases/sign_in_usecase.dart';
 import '../../domain/usecases/update_service_usecase.dart';
@@ -59,9 +61,11 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton(() => CreateServiceUseCase(sl()));
   sl.registerLazySingleton(() => UpdateServiceUseCase(sl()));
   sl.registerLazySingleton(() => DeleteServiceUseCase(sl()));
+  sl.registerLazySingleton(() => GetCategoriesUseCase(sl()));
+  sl.registerLazySingleton(() => GetServiceByIdUseCase(sl()));
 
   // ── 5. Cubits ──────────────────────────────────────────────────────────────
-  sl.registerFactory<SignInCubit>(() => SignInCubit(sl()));
+  sl.registerFactory<SignInCubit>(() => SignInCubit());
 
   sl.registerFactory<ServiceCubit>(
     () => ServiceCubit(
@@ -69,6 +73,8 @@ Future<void> initDependencies() async {
       createServiceUseCase: sl(),
       updateServiceUseCase: sl(),
       deleteServiceUseCase: sl(),
+      getCategoriesUseCase: sl(),
+      getServiceByIdUseCase: sl(),
     ),
   );
 }

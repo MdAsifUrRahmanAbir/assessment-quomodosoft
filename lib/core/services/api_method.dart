@@ -8,6 +8,7 @@ import '../utils/app_logger.dart';
 import 'local_storage_service.dart';
 import 'app_snackbar.dart';
 import '../errors/common_error_model.dart';
+import '../errors/exceptions.dart';
 
 final _log = appLogger(ApiMethod);
 
@@ -27,7 +28,7 @@ Future<Map<String, String>> _bearerHeaders() async {
   };
 }
 
-/// Low-level HTTP wrapper.
+/// Low-level HTTP wrapper with custom exception throwing and DNS check.
 class ApiMethod {
   final bool isBasic;
   const ApiMethod({required this.isBasic});
@@ -45,6 +46,24 @@ class ApiMethod {
       final separator = url.contains('?') ? '&' : '?';
       return '$url${separator}token=$token';
     }
+  }
+
+  /// Evaluates connection status during host lookup failures.
+  /// Resolves google.com to verify if the client has internet access.
+  Future<Never> _handleSocketException(SocketException e, String url) async {
+    _log.e('SocketException on $url: $e');
+    if (e.message.toLowerCase().contains('failed host lookup')) {
+      try {
+        final lookup = await InternetAddress.lookup('google.com')
+            .timeout(const Duration(seconds: 2));
+        if (lookup.isNotEmpty && lookup[0].rawAddress.isNotEmpty) {
+          throw const ServerException('Failed to resolve server host. Please check the domain address.');
+        }
+      } catch (_) {
+        // google.com resolution failed; device is likely offline
+      }
+    }
+    throw const NetworkException('Check your internet connection and try again.');
   }
 
   // ── GET ────────────────────────────────────────────────────────────────────
@@ -67,21 +86,20 @@ class ApiMethod {
       _log.i('|📒 GET ${res.statusCode}');
       if (showResult) _log.i(res.body);
       return _handleResponse(res, code, showErrorMessage);
-    } on SocketException {
-      _log.e('SocketException on GET $url');
-      if (showErrorMessage) {
-        AppSnackBar.error('Check your internet connection and try again.');
-      }
-      return null;
-    } on TimeoutException {
-      _log.e('TimeoutException on GET $url');
-      if (showErrorMessage) {
-        AppSnackBar.error('Request timed out. Please try again.');
-      }
-      return null;
+    } on SocketException catch (e) {
+      await _handleSocketException(e, url);
+    } on TimeoutException catch (e) {
+      _log.e('TimeoutException on GET $url: $e');
+      throw const NetworkException('Request timed out. Please try again.');
     } catch (e) {
-      _log.e('Unknown error on GET $url: $e');
-      return null;
+      _log.e('Error on GET $url: $e');
+      if (e is FormatException || e is ArgumentError) {
+        throw const ServerException('Invalid URL or request format.');
+      }
+      if (e is NetworkException || e is ServerException || e is AuthException) {
+        rethrow;
+      }
+      throw ServerException('Request failed: $e');
     }
   }
 
@@ -107,21 +125,20 @@ class ApiMethod {
       _log.i('|📒 POST ${res.statusCode}');
       if (showResult) _log.i(res.body);
       return _handleResponse(res, code, showErrorMessage);
-    } on SocketException {
-      _log.e('SocketException on POST $url');
-      if (showErrorMessage) {
-        AppSnackBar.error('Check your internet connection and try again.');
-      }
-      return null;
-    } on TimeoutException {
-      _log.e('TimeoutException on POST $url');
-      if (showErrorMessage) {
-        AppSnackBar.error('Request timed out. Please try again.');
-      }
-      return null;
+    } on SocketException catch (e) {
+      await _handleSocketException(e, url);
+    } on TimeoutException catch (e) {
+      _log.e('TimeoutException on POST $url: $e');
+      throw const NetworkException('Request timed out. Please try again.');
     } catch (e) {
-      _log.e('Unknown error on POST $url: $e');
-      return null;
+      _log.e('Error on POST $url: $e');
+      if (e is FormatException || e is ArgumentError) {
+        throw const ServerException('Invalid URL or request format.');
+      }
+      if (e is NetworkException || e is ServerException || e is AuthException) {
+        rethrow;
+      }
+      throw ServerException('Request failed: $e');
     }
   }
 
@@ -147,21 +164,20 @@ class ApiMethod {
       _log.i('|📒 PUT ${res.statusCode}');
       if (showResult) _log.i(res.body);
       return _handleResponse(res, code, showErrorMessage);
-    } on SocketException {
-      _log.e('SocketException on PUT $url');
-      if (showErrorMessage) {
-        AppSnackBar.error('Check your internet connection and try again.');
-      }
-      return null;
-    } on TimeoutException {
-      _log.e('TimeoutException on PUT $url');
-      if (showErrorMessage) {
-        AppSnackBar.error('Request timed out. Please try again.');
-      }
-      return null;
+    } on SocketException catch (e) {
+      await _handleSocketException(e, url);
+    } on TimeoutException catch (e) {
+      _log.e('TimeoutException on PUT $url: $e');
+      throw const NetworkException('Request timed out. Please try again.');
     } catch (e) {
-      _log.e('Unknown error on PUT $url: $e');
-      return null;
+      _log.e('Error on PUT $url: $e');
+      if (e is FormatException || e is ArgumentError) {
+        throw const ServerException('Invalid URL or request format.');
+      }
+      if (e is NetworkException || e is ServerException || e is AuthException) {
+        rethrow;
+      }
+      throw ServerException('Request failed: $e');
     }
   }
 
@@ -185,21 +201,20 @@ class ApiMethod {
       _log.i('|📒 DELETE ${res.statusCode}');
       if (showResult) _log.i(res.body);
       return _handleResponse(res, code, showErrorMessage);
-    } on SocketException {
-      _log.e('SocketException on DELETE $url');
-      if (showErrorMessage) {
-        AppSnackBar.error('Check your internet connection and try again.');
-      }
-      return null;
-    } on TimeoutException {
-      _log.e('TimeoutException on DELETE $url');
-      if (showErrorMessage) {
-        AppSnackBar.error('Request timed out. Please try again.');
-      }
-      return null;
+    } on SocketException catch (e) {
+      await _handleSocketException(e, url);
+    } on TimeoutException catch (e) {
+      _log.e('TimeoutException on DELETE $url: $e');
+      throw const NetworkException('Request timed out. Please try again.');
     } catch (e) {
-      _log.e('Unknown error on DELETE $url: $e');
-      return null;
+      _log.e('Error on DELETE $url: $e');
+      if (e is FormatException || e is ArgumentError) {
+        throw const ServerException('Invalid URL or request format.');
+      }
+      if (e is NetworkException || e is ServerException || e is AuthException) {
+        rethrow;
+      }
+      throw ServerException('Request failed: $e');
     }
   }
 
@@ -223,15 +238,20 @@ class ApiMethod {
       final res = await http.Response.fromStream(streamed);
       _log.i('|📒 MULTIPART ${res.statusCode}');
       return _handleResponse(res, code, showErrorMessage);
-    } on SocketException {
-      _log.e('SocketException on MULTIPART $url');
-      if (showErrorMessage) {
-        AppSnackBar.error('Check your internet connection and try again.');
-      }
-      return null;
+    } on SocketException catch (e) {
+      await _handleSocketException(e, url);
+    } on TimeoutException catch (e) {
+      _log.e('TimeoutException on MULTIPART $url: $e');
+      throw const NetworkException('Request timed out. Please try again.');
     } catch (e) {
-      _log.e('Unknown error on MULTIPART $url: $e');
-      return null;
+      _log.e('Error on MULTIPART $url: $e');
+      if (e is FormatException || e is ArgumentError) {
+        throw const ServerException('Invalid URL or request format.');
+      }
+      if (e is NetworkException || e is ServerException || e is AuthException) {
+        rethrow;
+      }
+      throw ServerException('Request failed: $e');
     }
   }
 
@@ -259,15 +279,20 @@ class ApiMethod {
       final res = await http.Response.fromStream(streamed);
       _log.i('|📒 MULTIPART-MULTI ${res.statusCode}');
       return _handleResponse(res, code, showErrorMessage);
-    } on SocketException {
-      _log.e('SocketException on MULTIPART-MULTI $url');
-      if (showErrorMessage) {
-        AppSnackBar.error('Check your internet connection and try again.');
-      }
-      return null;
+    } on SocketException catch (e) {
+      await _handleSocketException(e, url);
+    } on TimeoutException catch (e) {
+      _log.e('TimeoutException on MULTIPART-MULTI $url: $e');
+      throw const NetworkException('Request timed out. Please try again.');
     } catch (e) {
-      _log.e('Unknown error on MULTIPART-MULTI $url: $e');
-      return null;
+      _log.e('Error on MULTIPART-MULTI $url: $e');
+      if (e is FormatException || e is ArgumentError) {
+        throw const ServerException('Invalid URL or request format.');
+      }
+      if (e is NetworkException || e is ServerException || e is AuthException) {
+        rethrow;
+      }
+      throw ServerException('Request failed: $e');
     }
   }
 
@@ -281,10 +306,18 @@ class ApiMethod {
     if (res.statusCode == 401) {
       LocalStorage.signOut();
       navigatorKey.currentState?.pushNamedAndRemoveUntil(AppRoutes.signIn, (route) => false);
-      return null;
+      String errorMsg = 'Unauthorized access.';
+      try {
+        final decoded = jsonDecode(res.body) as Map<String, dynamic>;
+        errorMsg = decoded['message']?.toString() ??
+                   decoded['notification']?.toString() ??
+                   decoded['error']?.toString() ??
+                   'Unauthorized access.';
+      } catch (_) {}
+      throw AuthException(errorMsg);
     }
 
-    // Success (200 or 201)
+    // Success (200, 201, 204)
     if (res.statusCode == 200 || res.statusCode == 201 || res.statusCode == 204) {
       if (res.body.isEmpty) {
         return {};
@@ -298,30 +331,25 @@ class ApiMethod {
 
     // Server error
     if (res.statusCode == 500) {
-      if (showErrorMessage) {
-        AppSnackBar.error('Internal server error. Please try again later.');
-      }
-      return null;
+      throw const ServerException('Internal server error. Please try again later.');
     }
 
-    // Other errors — show backend message if available using CommonErrorModel
+    // Other client/server error codes (e.g. 400, 422, 403)
     _log.e('🐞 Unexpected status ${res.statusCode}: ${res.body}');
-    if (showErrorMessage) {
+    String errorMsg = 'Something went wrong.';
+    try {
+      final decoded = jsonDecode(res.body) as Map<String, dynamic>;
+      errorMsg = decoded['message']?.toString() ??
+                 decoded['notification']?.toString() ??
+                 decoded['error']?.toString() ??
+                 'Something went wrong.';
+    } catch (_) {
       try {
-        final decoded = jsonDecode(res.body) as Map<String, dynamic>;
-        final errorModel = CommonErrorModel.fromJson(decoded);
-        AppSnackBar.error(errorModel.message);
-      } catch (e) {
-        // Fallback for simple message or array
-        try {
-          final decoded = jsonDecode(res.body) as Map<String, dynamic>;
-          final msg = decoded['message']?.toString() ?? 'Something went wrong.';
-          AppSnackBar.error(msg);
-        } catch (_) {
-          AppSnackBar.error('Something went wrong.');
+        if (res.body.isNotEmpty && res.body.length < 120) {
+          errorMsg = res.body;
         }
-      }
+      } catch (_) {}
     }
-    return null;
+    throw ServerException(errorMsg);
   }
 }

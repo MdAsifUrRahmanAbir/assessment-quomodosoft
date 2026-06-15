@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -18,35 +19,53 @@ class AppBottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final double bottomPadding = MediaQuery.of(context).padding.bottom;
+    final double marginBottom = bottomPadding > 0 ? 8.0 : 24.0;
+
     return Container(
-      margin: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+      margin: EdgeInsets.fromLTRB(24, 0, 24, marginBottom),
       height: AppSizes.bottomNavHeight,
       decoration: BoxDecoration(
-        color: AppColors.cardBg,
         borderRadius: BorderRadius.circular(AppSizes.radiusFull),
         boxShadow: [
           BoxShadow(
-            color: AppColors.shadow,
-            blurRadius: 20,
-            offset: const Offset(0, 4),
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 24,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
-      child: Row(
-        children: [
-          _NavItem(
-            iconPath: currentIndex == 0 ? AppAssets.homeActive : AppAssets.home,
-            label: 'Home',
-            isSelected: currentIndex == 0,
-            onTap: () => onTap(0),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(AppSizes.radiusFull),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.82),
+              borderRadius: BorderRadius.circular(AppSizes.radiusFull),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.4),
+                width: 1.5,
+              ),
+            ),
+            child: Row(
+              children: [
+                _NavItem(
+                  iconPath: currentIndex == 0 ? AppAssets.homeActive : AppAssets.home,
+                  label: 'Home',
+                  isSelected: currentIndex == 0,
+                  onTap: () => onTap(0),
+                ),
+                _NavItem(
+                  iconPath: currentIndex == 1 ? AppAssets.serviceActive : AppAssets.service,
+                  label: 'Service',
+                  isSelected: currentIndex == 1,
+                  onTap: () => onTap(1),
+                ),
+              ],
+            ),
           ),
-          _NavItem(
-            iconPath: currentIndex == 1 ? AppAssets.serviceActive : AppAssets.service,
-            label: 'Service',
-            isSelected: currentIndex == 1,
-            onTap: () => onTap(1),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -86,7 +105,7 @@ class _NavItem extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               label,
-              style: GoogleFonts.poppins(
+              style: GoogleFonts.inter(
                 fontSize: AppSizes.fontS,
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
                 color: isSelected ? AppColors.primary : AppColors.textLight,

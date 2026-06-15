@@ -5,13 +5,10 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/di/injection_container.dart';
 import '../../../core/services/app_snackbar.dart';
-import '../../../domain/entities/service_entity.dart';
 import '../../bloc/service/service_cubit.dart';
-import '../../widgets/primary_button.dart';
-import '../../widgets/app_input_field.dart';
-import '../../widgets/service_form_widgets.dart';
+import 'widgets/create_service_form.dart';
 
-/// Screen 04 – Add New Service (Create - BLoC-driven)
+/// Screen 04 – Add New Service (Create - BLoC-driven, Stateless)
 class CreateServiceScreen extends StatelessWidget {
   const CreateServiceScreen({super.key});
 
@@ -24,77 +21,8 @@ class CreateServiceScreen extends StatelessWidget {
   }
 }
 
-class _CreateServiceView extends StatefulWidget {
+class _CreateServiceView extends StatelessWidget {
   const _CreateServiceView();
-
-  @override
-  State<_CreateServiceView> createState() => _CreateServiceViewState();
-}
-
-class _CreateServiceViewState extends State<_CreateServiceView> {
-  final _formKey = GlobalKey<FormState>();
-  final _nameCtrl = TextEditingController();
-  final _priceCtrl = TextEditingController(text: '50');
-  final _descCtrl = TextEditingController();
-  String _selectedCategory = 'Vloggers';
-  final List<TextEditingController> _featureCtrs = [
-    TextEditingController(text: '4 Unique Header Style'),
-  ];
-
-  final List<String> _categories = [
-    'Vloggers', 'Design', 'Development', 'Marketing', 'Writing', 'Photography',
-  ];
-
-  @override
-  void dispose() {
-    _nameCtrl.dispose();
-    _priceCtrl.dispose();
-    _descCtrl.dispose();
-    for (final c in _featureCtrs) {
-      c.dispose();
-    }
-    super.dispose();
-  }
-
-  void _addFeature() =>
-      setState(() => _featureCtrs.add(TextEditingController()));
-
-  void _removeFeature(int index) {
-    setState(() {
-      _featureCtrs[index].dispose();
-      _featureCtrs.removeAt(index);
-    });
-  }
-
-  void _onPublish(BuildContext context) {
-    if (!(_formKey.currentState?.validate() ?? false)) return;
-
-    // Parse price safely
-    final cleanPriceText = _priceCtrl.text.replaceAll(RegExp(r'[^\d.]'), '');
-    final price = double.tryParse(cleanPriceText) ?? 50.0;
-
-    // Collect features
-    final features = _featureCtrs
-        .map((c) => c.text.trim())
-        .where((text) => text.isNotEmpty)
-        .toList();
-
-    final newService = ServiceEntity(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      title: _nameCtrl.text.trim(),
-      category: _selectedCategory,
-      price: price,
-      rating: 5.0,
-      reviewCount: 0,
-      imageUrl: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800',
-      date: '13 Jun, 2026',
-      isActive: true,
-      description: _descCtrl.text.trim(),
-      features: features,
-    );
-
-    context.read<ServiceCubit>().createService(newService);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -141,99 +69,9 @@ class _CreateServiceViewState extends State<_CreateServiceView> {
             ),
           ),
           body: SafeArea(
-            child: Form(
-              key: _formKey,
-              child: SingleChildScrollView(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: AppSizes.paddingM),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: AppSizes.paddingM),
-
-                    // ── Image upload ─────────────────────────────
-                    ImageUploadBox(onTap: () {}),
-
-                    const SizedBox(height: AppSizes.paddingL),
-
-                    // ── Service Name ─────────────────────────────
-                    AppInputField(
-                      label: 'Service Name*',
-                      hint: 'Name here',
-                      controller: _nameCtrl,
-                      enabled: !isLoading,
-                      validator: (v) => (v == null || v.isEmpty)
-                          ? 'Service name is required'
-                          : null,
-                    ),
-
-                    const SizedBox(height: AppSizes.paddingM),
-
-                    // ── Price + Category ─────────────────────────
-                    Row(
-                      children: [
-                        Expanded(
-                          child: AppInputField(
-                            label: 'Price Range*',
-                            hint: '50',
-                            controller: _priceCtrl,
-                            keyboardType: TextInputType.number,
-                            enabled: !isLoading,
-                            validator: (v) =>
-                                (v == null || v.isEmpty) ? 'Required' : null,
-                          ),
-                        ),
-                        const SizedBox(width: AppSizes.paddingM),
-                        Expanded(
-                          child: CategoryDropdown(
-                            value: _selectedCategory,
-                            items: _categories,
-                            onChanged: (val) {
-                              if (!isLoading) {
-                                setState(() =>
-                                    _selectedCategory = val ?? _selectedCategory);
-                              }
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: AppSizes.paddingM),
-
-                    // ── Description ──────────────────────────────
-                    AppInputField(
-                      label: 'Description*',
-                      hint: 'Description here',
-                      controller: _descCtrl,
-                      maxLines: 4,
-                      enabled: !isLoading,
-                      validator: (v) => (v == null || v.isEmpty)
-                          ? 'Description is required'
-                          : null,
-                    ),
-
-                    const SizedBox(height: AppSizes.paddingL),
-
-                    // ── Package Features ─────────────────────────
-                    PackageFeaturesSection(
-                      controllers: _featureCtrs,
-                      onAdd: _addFeature,
-                      onRemove: _removeFeature,
-                    ),
-
-                    const SizedBox(height: AppSizes.paddingXL),
-
-                    // ── Publish Button ───────────────────────────
-                    PrimaryButton(
-                      label: isLoading ? 'Publishing...' : 'Publish Service',
-                      onPressed: isLoading ? () {} : () => _onPublish(context),
-                    ),
-
-                    const SizedBox(height: AppSizes.paddingXL),
-                  ],
-                ),
-              ),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: AppSizes.paddingM),
+              child: CreateServiceForm(isLoading: isLoading),
             ),
           ),
         );

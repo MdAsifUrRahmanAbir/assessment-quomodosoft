@@ -1,11 +1,10 @@
 import 'api_endpoint.dart';
-import '../utils/app_logger.dart';
 import 'api_method.dart';
 import 'app_snackbar.dart';
 
-final _log = appLogger(ApiServices);
-
 /// Generic API service that parses HTTP responses into typed models.
+///
+/// Exceptions bubble up directly to the datasource/repository layer.
 class ApiServices {
   ApiServices._();
 
@@ -18,18 +17,13 @@ class ApiServices {
     bool showErrorMessage = true,
     bool showSuccessMessage = false,
   }) async {
-    try {
-      final response = await ApiMethod(isBasic: isBasic).get(
-        "${ApiEndpoint.baeUrl}$url",
-        showResult: showResult,
-        showErrorMessage: showErrorMessage,
-      );
-      if (response != null) {
-        return _handleSuccess(response, fromJson, showSuccessMessage);
-      }
-    } catch (e) {
-      _log.e('🐞 ApiServices.get error on $url: $e');
-      AppSnackBar.error('Something went wrong.');
+    final response = await ApiMethod(isBasic: isBasic).get(
+      "${ApiEndpoint.baeUrl}$url",
+      showResult: showResult,
+      showErrorMessage: showErrorMessage,
+    );
+    if (response != null) {
+      return _handleSuccess(response, fromJson, showSuccessMessage);
     }
     return null;
   }
@@ -45,20 +39,15 @@ class ApiServices {
     bool showSuccessMessage = false,
     int statusCode = 200,
   }) async {
-    try {
-      final response = await ApiMethod(isBasic: isBasic).post(
-        "${ApiEndpoint.baeUrl}$url",
-        body ?? {},
-        code: statusCode,
-        showResult: showResult,
-        showErrorMessage: showErrorMessage,
-      );
-      if (response != null) {
-        return _handleSuccess(response, fromJson, showSuccessMessage);
-      }
-    } catch (e) {
-      _log.e('🐞 ApiServices.post error on $url: $e');
-      AppSnackBar.error('Something went wrong.');
+    final response = await ApiMethod(isBasic: isBasic).post(
+      "${ApiEndpoint.baeUrl}$url",
+      body ?? {},
+      code: statusCode,
+      showResult: showResult,
+      showErrorMessage: showErrorMessage,
+    );
+    if (response != null) {
+      return _handleSuccess(response, fromJson, showSuccessMessage);
     }
     return null;
   }
@@ -74,20 +63,15 @@ class ApiServices {
     bool showSuccessMessage = false,
     int statusCode = 200,
   }) async {
-    try {
-      final response = await ApiMethod(isBasic: isBasic).put(
-        "${ApiEndpoint.baeUrl}$url",
-        body ?? {},
-        code: statusCode,
-        showResult: showResult,
-        showErrorMessage: showErrorMessage,
-      );
-      if (response != null) {
-        return _handleSuccess(response, fromJson, showSuccessMessage);
-      }
-    } catch (e) {
-      _log.e('🐞 ApiServices.put error on $url: $e');
-      AppSnackBar.error('Something went wrong.');
+    final response = await ApiMethod(isBasic: isBasic).put(
+      "${ApiEndpoint.baeUrl}$url",
+      body ?? {},
+      code: statusCode,
+      showResult: showResult,
+      showErrorMessage: showErrorMessage,
+    );
+    if (response != null) {
+      return _handleSuccess(response, fromJson, showSuccessMessage);
     }
     return null;
   }
@@ -102,19 +86,14 @@ class ApiServices {
     bool showSuccessMessage = false,
     int statusCode = 200,
   }) async {
-    try {
-      final response = await ApiMethod(isBasic: isBasic).delete(
-        "${ApiEndpoint.baeUrl}$url",
-        code: statusCode,
-        showResult: showResult,
-        showErrorMessage: showErrorMessage,
-      );
-      if (response != null) {
-        return _handleSuccess(response, fromJson, showSuccessMessage);
-      }
-    } catch (e) {
-      _log.e('🐞 ApiServices.delete error on $url: $e');
-      AppSnackBar.error('Something went wrong.');
+    final response = await ApiMethod(isBasic: isBasic).delete(
+      "${ApiEndpoint.baeUrl}$url",
+      code: statusCode,
+      showResult: showResult,
+      showErrorMessage: showErrorMessage,
+    );
+    if (response != null) {
+      return _handleSuccess(response, fromJson, showSuccessMessage);
     }
     return null;
   }
@@ -130,20 +109,15 @@ class ApiServices {
     bool showErrorMessage = true,
     bool showSuccessMessage = false,
   }) async {
-    try {
-      final response = await ApiMethod(isBasic: isBasic).multipartMultiFile(
-        "${ApiEndpoint.baeUrl}$url",
-        body,
-        fieldList: fieldList,
-        pathList: pathList,
-        showErrorMessage: showErrorMessage,
-      );
-      if (response != null) {
-        return _handleSuccess(response, fromJson, showSuccessMessage);
-      }
-    } catch (e) {
-      _log.e('🐞 ApiServices.multipart error on $url: $e');
-      AppSnackBar.error('Something went wrong.');
+    final response = await ApiMethod(isBasic: isBasic).multipartMultiFile(
+      "${ApiEndpoint.baeUrl}$url",
+      body,
+      fieldList: fieldList,
+      pathList: pathList,
+      showErrorMessage: showErrorMessage,
+    );
+    if (response != null) {
+      return _handleSuccess(response, fromJson, showSuccessMessage);
     }
     return null;
   }

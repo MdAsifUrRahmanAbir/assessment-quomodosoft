@@ -1,14 +1,17 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_sizes.dart';
+import '../../domain/entities/category_entity.dart';
 
 // ─────────────────────────────────────────────────────────────
 // Shared image upload box widget used in create & update screens
 // ─────────────────────────────────────────────────────────────
 class ImageUploadBox extends StatelessWidget {
-  const ImageUploadBox({super.key, this.onTap});
+  const ImageUploadBox({super.key, this.onTap, this.imagePath});
   final VoidCallback? onTap;
+  final String? imagePath;
 
   @override
   Widget build(BuildContext context) {
@@ -22,41 +25,50 @@ class ImageUploadBox extends StatelessWidget {
           borderRadius: BorderRadius.circular(AppSizes.radiusL),
           border: Border.all(color: AppColors.border, width: 1.5),
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.image_outlined,
-                color: AppColors.primary, size: AppSizes.iconXL),
-            const SizedBox(height: AppSizes.paddingXS),
-            Text(
-              'Browser Image',
-              style: GoogleFonts.poppins(
-                color: AppColors.primary,
-                fontSize: AppSizes.fontM,
-                fontWeight: FontWeight.w500,
+        child: imagePath != null && imagePath!.isNotEmpty
+            ? ClipRRect(
+                borderRadius: BorderRadius.circular(AppSizes.radiusL - 1.5),
+                child: imagePath!.startsWith('http')
+                    ? Image.network(imagePath!, fit: BoxFit.cover)
+                    : Image.file(File(imagePath!), fit: BoxFit.cover),
+              )
+            : Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.image_outlined,
+                      color: AppColors.primary, size: AppSizes.iconXL),
+                  const SizedBox(height: AppSizes.paddingXS),
+                  Text(
+                    'Browser Image',
+                    style: GoogleFonts.poppins(
+                      color: AppColors.primary,
+                      fontSize: AppSizes.fontM,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ],
-        ),
       ),
     );
   }
 }
 
 // ─────────────────────────────────────────────────────────────
-// Category dropdown
+// Category dropdown (Generic)
 // ─────────────────────────────────────────────────────────────
-class CategoryDropdown extends StatelessWidget {
+class CategoryDropdown<T> extends StatelessWidget {
   const CategoryDropdown({
     super.key,
     required this.value,
     required this.items,
     required this.onChanged,
+    required this.itemAsString,
   });
 
-  final String value;
-  final List<String> items;
-  final ValueChanged<String?> onChanged;
+  final T value;
+  final List<T> items;
+  final ValueChanged<T?> onChanged;
+  final String Function(T) itemAsString;
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +93,7 @@ class CategoryDropdown extends StatelessWidget {
             border: Border.all(color: AppColors.inputBorder),
           ),
           child: DropdownButtonHideUnderline(
-            child: DropdownButton<String>(
+            child: DropdownButton<T>(
               value: value,
               isExpanded: true,
               icon: const Icon(Icons.keyboard_arrow_down_rounded,
@@ -90,7 +102,7 @@ class CategoryDropdown extends StatelessWidget {
                   fontSize: AppSizes.fontM, color: AppColors.textDark),
               onChanged: onChanged,
               items: items
-                  .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                  .map((e) => DropdownMenuItem<T>(value: e, child: Text(itemAsString(e))))
                   .toList(),
             ),
           ),

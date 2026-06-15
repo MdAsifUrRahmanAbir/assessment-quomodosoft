@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import '../../core/errors/failures.dart';
+import '../entities/category_entity.dart';
 import '../entities/service_entity.dart';
 
 /// Abstract contract for all service-related data operations.
@@ -8,7 +9,7 @@ import '../entities/service_entity.dart';
 /// Consumed by use cases in the domain layer.
 abstract class ServiceRepository {
   /// Returns a list of all services for the authenticated user.
-  Future<Either<Failure, List<ServiceEntity>>> getServices();
+  Future<Either<Failure, List<ServiceEntity>>> getServices({int page = 1});
 
   /// Returns a single service by [id].
   Future<Either<Failure, ServiceEntity>> getServiceById(String id);
@@ -21,4 +22,7 @@ abstract class ServiceRepository {
 
   /// Deletes the service with [id]. Returns true on success.
   Future<Either<Failure, bool>> deleteService(String id);
+
+  /// Returns a list of all active service categories.
+  Future<Either<Failure, List<CategoryEntity>>> getCategories();
 }

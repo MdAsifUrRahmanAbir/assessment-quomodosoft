@@ -16,7 +16,7 @@ class GetServicesUseCase {
 
   final ServiceRepository _repository;
 
-  Future<Either<Failure, List<ServiceEntity>>> call() {
-    return _repository.getServices();
+  Future<Either<Failure, List<ServiceEntity>>> call({int page = 1}) {
+    return _repository.getServices(page: page);
   }
 }

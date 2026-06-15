@@ -20,12 +20,34 @@ class ServiceLoading extends ServiceState {
 
 /// Successfully loaded a list of services.
 class ServiceLoaded extends ServiceState {
-  const ServiceLoaded(this.services);
+  const ServiceLoaded(
+    this.services, {
+    this.currentPage = 1,
+    this.hasMore = false,
+    this.isLoadingMore = false,
+  });
 
   final List<ServiceEntity> services;
+  final int currentPage;
+  final bool hasMore;
+  final bool isLoadingMore;
+
+  ServiceLoaded copyWith({
+    List<ServiceEntity>? services,
+    int? currentPage,
+    bool? hasMore,
+    bool? isLoadingMore,
+  }) {
+    return ServiceLoaded(
+      services ?? this.services,
+      currentPage: currentPage ?? this.currentPage,
+      hasMore: hasMore ?? this.hasMore,
+      isLoadingMore: isLoadingMore ?? this.isLoadingMore,
+    );
+  }
 
   @override
-  List<Object?> get props => [services];
+  List<Object?> get props => [services, currentPage, hasMore, isLoadingMore];
 }
 
 /// An operation (create/update/delete) completed successfully.

@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import '../../../core/errors/exceptions.dart';
 import '../../../core/errors/failures.dart';
 import '../../../core/utils/app_logger.dart';
+import '../../../domain/entities/category_entity.dart';
 import '../../../domain/entities/service_entity.dart';
 import '../../../domain/repository/service_repository.dart';
 import '../datasource/remote/service_remote_datasource.dart';
@@ -20,17 +21,17 @@ class ServiceRepositoryImpl implements ServiceRepository {
 
   // ── getServices ───────────────────────────────────────────────────────────
   @override
-  Future<Either<Failure, List<ServiceEntity>>> getServices() async {
+  Future<Either<Failure, List<ServiceEntity>>> getServices({int page = 1}) async {
     try {
-      final models = await remoteDatasource.getServices();
+      final models = await remoteDatasource.getServices(page: page);
       final entities = models.map((m) => m.toEntity()).toList();
-      _log.i('Fetched ${entities.length} services from remote.');
+      _log.i('Fetched ${entities.length} services from remote for page $page.');
       return Right(entities);
     } on ServerException catch (e) {
       _log.e('Server error: ${e.message}');
       return Left(ServerFailure(e.message));
-    } on NetworkException {
-      return const Left(NetworkFailure());
+    } on NetworkException catch (e) {
+      return Left(NetworkFailure(e.message));
     } catch (e) {
       _log.e('Unexpected error: $e');
       return const Left(UnexpectedFailure());
@@ -45,8 +46,8 @@ class ServiceRepositoryImpl implements ServiceRepository {
       return Right(model.toEntity());
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message));
-    } on NetworkException {
-      return const Left(NetworkFailure());
+    } on NetworkException catch (e) {
+      return Left(NetworkFailure(e.message));
     } catch (e) {
       return const Left(UnexpectedFailure());
     }
@@ -63,8 +64,8 @@ class ServiceRepositoryImpl implements ServiceRepository {
       return Right(model.toEntity());
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message));
-    } on NetworkException {
-      return const Left(NetworkFailure());
+    } on NetworkException catch (e) {
+      return Left(NetworkFailure(e.message));
     } catch (e) {
       return const Left(UnexpectedFailure());
     }
@@ -81,8 +82,8 @@ class ServiceRepositoryImpl implements ServiceRepository {
       return Right(model.toEntity());
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message));
-    } on NetworkException {
-      return const Left(NetworkFailure());
+    } on NetworkException catch (e) {
+      return Left(NetworkFailure(e.message));
     } catch (e) {
       return const Left(UnexpectedFailure());
     }
@@ -96,8 +97,23 @@ class ServiceRepositoryImpl implements ServiceRepository {
       return Right(success);
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message));
-    } on NetworkException {
-      return const Left(NetworkFailure());
+    } on NetworkException catch (e) {
+      return Left(NetworkFailure(e.message));
+    } catch (e) {
+      return const Left(UnexpectedFailure());
+    }
+  }
+
+  // ── getCategories ─────────────────────────────────────────────────────────
+  @override
+  Future<Either<Failure, List<CategoryEntity>>> getCategories() async {
+    try {
+      final categories = await remoteDatasource.getCategories();
+      return Right(categories);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
+    } on NetworkException catch (e) {
+      return Left(NetworkFailure(e.message));
     } catch (e) {
       return const Left(UnexpectedFailure());
     }

@@ -10,12 +10,17 @@ class AppTheme {
         useMaterial3: true,
         brightness: Brightness.light,
         scaffoldBackgroundColor: AppColors.scaffold,
+        canvasColor: Colors.transparent,
         primaryColor: AppColors.primary,
         colorScheme: const ColorScheme.light(
           primary: AppColors.primary,
           secondary: AppColors.primaryLight,
           surface: AppColors.scaffold,
           error: AppColors.danger,
+        ),
+        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
         ),
         textTheme: GoogleFonts.poppinsTextTheme().apply(
           bodyColor: AppColors.textDark,

@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_sizes.dart';
 import '../../core/constants/app_assets.dart';
+import '../../core/services/api_endpoint.dart';
 
 /// Service card widget matching the Figma service listing design.
 class ServiceCard extends StatelessWidget {
@@ -62,7 +63,9 @@ class ServiceCard extends StatelessWidget {
                 children: [
                   // Thumbnail
                   Image.network(
-                    imageUrl,
+                    imageUrl.startsWith('http')
+                        ? imageUrl
+                        : "${ApiEndpoint.mainDomain}/$imageUrl",
                     height: AppSizes.serviceCardHeight,
                     width: double.infinity,
                     fit: BoxFit.cover,
@@ -90,13 +93,15 @@ class ServiceCard extends StatelessWidget {
                       children: [
                         _ActionIconButton(
                           iconPath: AppAssets.edit,
-                          bgColor: AppColors.chipBg,
+                          bgColor: const Color(0xFF2563EB),
+                          iconColor: Colors.white,
                           onTap: onEdit,
                         ),
                         const SizedBox(width: AppSizes.paddingXS),
                         _ActionIconButton(
                           iconPath: AppAssets.deleted,
-                          bgColor: const Color(0xFFFFEEEE),
+                          bgColor: const Color(0xFFEF4444),
+                          iconColor: Colors.white,
                           onTap: onDelete,
                         ),
                       ],
@@ -108,19 +113,26 @@ class ServiceCard extends StatelessWidget {
                     left: AppSizes.paddingM,
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: AppSizes.paddingS,
-                        vertical: AppSizes.paddingXS,
+                        horizontal: 12,
+                        vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: AppColors.textDark,
-                        borderRadius: BorderRadius.circular(AppSizes.radiusS),
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.06),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
                       ),
                       child: Text(
                         '\$${price.toStringAsFixed(0)}',
-                        style: GoogleFonts.poppins(
-                          color: AppColors.textWhite,
-                          fontSize: AppSizes.fontM,
-                          fontWeight: FontWeight.w600,
+                        style: GoogleFonts.inter(
+                          color: const Color(0xFF2563EB),
+                          fontSize: 14,
+                          fontWeight: FontWeight.w800,
                         ),
                       ),
                     ),
@@ -137,45 +149,57 @@ class ServiceCard extends StatelessWidget {
                   // Category + Rating row
                   Row(
                     children: [
-                      Text(
-                        category,
-                        style: GoogleFonts.poppins(
-                          fontSize: AppSizes.fontS,
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.w500,
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFEFF6FF),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          category,
+                          style: GoogleFonts.inter(
+                            fontSize: 10,
+                            color: const Color(0xFF2563EB),
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                       const Spacer(),
-                      _StarRating(rating: rating),
-                      const SizedBox(width: 4),
-                      Text(
-                        '$reviewCount Reviews',
-                        style: GoogleFonts.poppins(
-                          fontSize: AppSizes.fontXS,
-                          color: AppColors.textMedium,
+                      if (rating > 0.0 || reviewCount > 0) ...[
+                        _StarRating(rating: rating),
+                        const SizedBox(width: 4),
+                        Text(
+                          '$reviewCount Reviews',
+                          style: GoogleFonts.inter(
+                            fontSize: AppSizes.fontXS,
+                            color: AppColors.textMedium,
+                          ),
                         ),
-                      ),
+                      ] else ...[
+                        Text(
+                          date,
+                          style: GoogleFonts.inter(
+                            fontSize: AppSizes.fontXS,
+                            color: AppColors.textLight,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
                     ],
                   ),
-                  const SizedBox(height: AppSizes.paddingXS),
+                  const SizedBox(height: 8),
                   // Title
                   Text(
                     title,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.poppins(
+                    style: GoogleFonts.inter(
                       fontSize: AppSizes.fontL,
                       fontWeight: FontWeight.w600,
                       color: AppColors.textDark,
-                    ),
-                  ),
-                  const SizedBox(height: AppSizes.paddingXS),
-                  // Date
-                  Text(
-                    date,
-                    style: GoogleFonts.poppins(
-                      fontSize: AppSizes.fontXS,
-                      color: AppColors.textLight,
                     ),
                   ),
                 ],
@@ -202,7 +226,7 @@ class _ActiveBadge extends StatelessWidget {
       ),
       child: Text(
         isActive ? 'Active' : 'Inactive',
-        style: GoogleFonts.poppins(
+        style: GoogleFonts.inter(
           color: AppColors.textWhite,
           fontSize: AppSizes.fontXS,
           fontWeight: FontWeight.w600,
@@ -216,11 +240,13 @@ class _ActionIconButton extends StatelessWidget {
   const _ActionIconButton({
     required this.iconPath,
     required this.bgColor,
+    required this.iconColor,
     this.onTap,
   });
 
   final String iconPath;
   final Color bgColor;
+  final Color iconColor;
   final VoidCallback? onTap;
 
   @override
@@ -232,10 +258,15 @@ class _ActionIconButton extends StatelessWidget {
         height: 32,
         decoration: BoxDecoration(
           color: bgColor,
-          borderRadius: BorderRadius.circular(AppSizes.radiusS),
+          borderRadius: BorderRadius.circular(8),
         ),
         alignment: Alignment.center,
-        child: Image.asset(iconPath, width: AppSizes.iconS, height: AppSizes.iconS),
+        child: Image.asset(
+          iconPath,
+          width: 16,
+          height: 16,
+          color: iconColor,
+        ),
       ),
     );
   }

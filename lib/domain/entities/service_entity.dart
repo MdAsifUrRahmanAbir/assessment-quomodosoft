@@ -17,6 +17,7 @@ class ServiceEntity extends Equatable {
     required this.isActive,
     this.description = '',
     this.features = const [],
+    this.translateId,
   });
 
   final String id;
@@ -30,6 +31,7 @@ class ServiceEntity extends Equatable {
   final bool isActive;
   final String description;
   final List<String> features;
+  final int? translateId;
 
   /// Returns a copy with overridden fields.
   ServiceEntity copyWith({
@@ -44,6 +46,7 @@ class ServiceEntity extends Equatable {
     bool? isActive,
     String? description,
     List<String>? features,
+    int? translateId,
   }) {
     return ServiceEntity(
       id: id ?? this.id,
@@ -57,6 +60,7 @@ class ServiceEntity extends Equatable {
       isActive: isActive ?? this.isActive,
       description: description ?? this.description,
       features: features ?? this.features,
+      translateId: translateId ?? this.translateId,
     );
   }
 
@@ -73,5 +77,6 @@ class ServiceEntity extends Equatable {
         isActive,
         description,
         features,
+        translateId,
       ];
 }

@@ -40,8 +40,8 @@ class AuthRepositoryImpl implements AuthRepository {
     } on ServerException catch (e) {
       _log.e('Server error: ${e.message}');
       return Left(ServerFailure(e.message));
-    } on NetworkException {
-      return const Left(NetworkFailure());
+    } on NetworkException catch (e) {
+      return Left(NetworkFailure(e.message));
     } catch (e) {
       _log.e('Unexpected sign-in error: $e');
       return const Left(UnexpectedFailure());

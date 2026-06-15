@@ -1,24 +1,26 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../core/errors/failures.dart';
+import '../../../core/services/api_service.dart';
+import '../../../core/services/api_endpoint.dart';
+import '../../../core/services/local_storage_service.dart';
+import '../../../data/models/user_model.dart';
 import '../../../domain/entities/user_entity.dart';
-import '../../../domain/usecases/sign_in_usecase.dart';
 
 part 'sign_in_state.dart';
 
 /// Cubit that drives the Sign In screen as a pure controller.
 ///
 /// Keeps form state and controllers inside the Cubit to support a stateless view.
+/// Calls ApiServices directly, matching the reference LoginController.
 class SignInCubit extends Cubit<SignInState> {
-  SignInCubit(this._signInUseCase) : super(const SignInInitial());
-
-  final SignInUseCase _signInUseCase;
+  SignInCubit() : super(const SignInInitial());
 
   // ── Form State & Controllers ──────────────────────────────────────────────
   final formKey = GlobalKey<FormState>();
-  final usernameCtrl = TextEditingController(text: 'designslab');
-  final passwordCtrl = TextEditingController();
+  final usernameCtrl = TextEditingController(text: "client@gmail.com");
+  final passwordCtrl = TextEditingController(text: "1234");
 
   /// Toggles password visibility and updates states
   void toggleObscurePassword() {
@@ -36,7 +38,7 @@ class SignInCubit extends Cubit<SignInState> {
     ));
   }
 
-  /// Attempts sign-in using controllers.
+  /// Attempts sign-in using controllers by calling API directly.
   Future<void> signIn() async {
     if (!(formKey.currentState?.validate() ?? false)) return;
     if (state is SignInLoading) return;
@@ -49,41 +51,42 @@ class SignInCubit extends Cubit<SignInState> {
     // Add a small delay for realistic UX feel
     await Future.delayed(const Duration(milliseconds: 800));
 
-    final result = await _signInUseCase(
-      username: usernameCtrl.text.trim(),
-      password: passwordCtrl.text.trim(),
-    );
+    try {
+      final response = await ApiServices.post<UserModel>(
+        UserModel.fromJson,
+        ApiEndpoint.login,
+        body: {
+          'email': usernameCtrl.text.trim(),
+          'password': passwordCtrl.text.trim(),
+        },
+        showSuccessMessage: true,
+        isBasic: true,
+      );
 
-    result.fold(
-      (failure) {
-        // ── Demo fallback ───────────────────────────────────────────────────
-        if (failure is NetworkFailure || failure is ServerFailure) {
-          emit(
-            SignInSuccess(
-              UserEntity(
-                id: '1',
-                name: usernameCtrl.text.trim(),
-                email: '${usernameCtrl.text.trim()}@demo.com',
-                token: 'demo_token_${DateTime.now().millisecondsSinceEpoch}',
-              ),
-              obscurePassword: state.obscurePassword,
-              rememberMe: state.rememberMe,
-            ),
-          );
-        } else {
-          emit(SignInError(
-            failure.message,
-            obscurePassword: state.obscurePassword,
-            rememberMe: state.rememberMe,
-          ));
-        }
-      },
-      (user) => emit(SignInSuccess(
-        user,
+      if (response != null) {
+        // Save user info and token locally
+        await LocalStorage.saveToken(token: response.token);
+        await LocalStorage.saveUserJson(json: json.encode(response.toJson()));
+
+        emit(SignInSuccess(
+          response.toEntity(),
+          obscurePassword: state.obscurePassword,
+          rememberMe: state.rememberMe,
+        ));
+      } else {
+        emit(SignInError(
+          'Invalid username or password.',
+          obscurePassword: state.obscurePassword,
+          rememberMe: state.rememberMe,
+        ));
+      }
+    } catch (e) {
+      emit(SignInError(
+        e.toString(),
         obscurePassword: state.obscurePassword,
         rememberMe: state.rememberMe,
-      )),
-    );
+      ));
+    }
   }
 
   /// Resets state back to initial.

@@ -1,7 +1,7 @@
 class ApiEndpoint {
   // ── Base API URL ─────────────────────────────────────────────────────────
-  static String mainDomain = "https://api.serviceapp.example.com"; // Replace with your real base domain
-  static String baeUrl = "$mainDomain/api/v1/";
+  static String mainDomain = "https://inflanar.mamunuiux.com"; // Replace with your real base domain
+  static String baeUrl = "$mainDomain/api/";
 
   // ── Endpoints ────────────────────────────────────────────────────────────
   // 1. Service List (GET)
